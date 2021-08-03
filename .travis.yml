@@ -20,3 +20,28 @@ after_success:
   - docker push chivanillo/multi-nginx
   - docker push chivanillo/multi-server
   - docker push chivanillo/multi-worker
+# Deploy app to AWS: (URL: Docker-env.qbtbvwcxmh.us-west-2.elasticbeanstalk.com)
+#deploy:
+#  provider: elasticbeanstalk
+#  region: 'us-west-1'
+#  app: 'multi-docker'
+#  env: 'MultiDocker-env'
+#  bucket_name: 'elasticbeanstalk-us-west-1-306476627547' # Name of the bucket that Travis-CI is going to put the app zip file into Services > search for S3 > elastickbeanstalk-us-west-2-.....
+#  bucket_path: 'multi-docker'
+#  on:
+#    branch: master # Anytime we push code into master, that's the time to deploy
+#  access_key_id: $AWS_ACCESS_KEY
+#  secret_access_key:
+#    secure: "$AWS_SECRET_KEY"
+
+# In AWS: Services > search for IAM: Service that is used to manage API keys that can be used by outside services
+#   Within Users section > Add user >
+#     Name: "docker-react-travis-ci",
+#     Access type: Programmatic access, AWS Management Console access
+#     Permissions: Attach existing policies directly. Search for beanstalk. Select the one for full access
+#   Next Review and Create user.
+#   Make a note of: Access Key ID and Secret Access Key
+
+# In Travis-CI: docker-react Repo -> Settings -> Environment Variables:
+# Name: AWS_ACCESS_KEY, Value: <Access Key ID>
+# Name: AWS_SECRET_KEY, Value: <Secret Access Key>
