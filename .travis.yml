@@ -6,7 +6,7 @@ before_install:
   - docker build -t chivanillo/multi-docker -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -r CI=true chivanillo/multi-docker npm run test -- --coverage
+  - docker run -e CI=true chivanillo/multi-docker npm run test -- --coverage
 
 after_success:
   - docker build -t chivanillo/multi-client ./client
