@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t chivanillo/multi-docker -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -r CI=true chivanillo/multi-docker npm run test -- --coverage
+
+after_success:
+  - docker build -t chivanillo/multi-client ./client
+  - docker build -t chivanillo/multi-nginx ./nginx
+  - docker build -t chivanillo/multi-server ./server
+  - docker build -t chivanillo/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push chivanillo/multi-client
+  - docker push chivanillo/multi-nginx
+  - docker push chivanillo/multi-server
+  - docker push chivanillo/multi-worker
