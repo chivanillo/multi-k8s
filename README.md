@@ -157,3 +157,11 @@ Create a new service account called tiller in the kube-system namespace:
 
 > helm init --service-account tiller --upgrade
 > --upgrade: Ensure to use the latest version of helm
+
+# Certification Manager
+
+More information at: https://github.com/jetstack/cert-manager
+
+# Skaffold
+
+More information at: https://skaffold.dev/docs/getting-started

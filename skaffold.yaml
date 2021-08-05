@@ -1,0 +1,42 @@
+apiVersion: skaffold/v2beta20
+kind: Config
+metadata:
+  name: complex
+build:
+  artifacts:
+  - image: chivanillo/multi-client
+    context: client
+    buildpacks:
+      builder: gcr.io/buildpacks/builder:v1
+  - image: chivanillo/multi-server
+    context: server
+    buildpacks:
+      builder: gcr.io/buildpacks/builder:v1
+  - image: chivanillo/multi-worker
+    context: worker
+    buildpacks:
+      builder: gcr.io/buildpacks/builder:v1
+  - image: postgres
+    context: client
+    docker:
+      dockerfile: Dockerfile
+  - image: redis
+    context: client
+    docker:
+      dockerfile: Dockerfile.dev
+deploy:
+  kubectl:
+    manifests:
+    - k8s/certificate.yaml
+    - k8s/client-cluster-ip-service.yaml
+    - k8s/client-deployment.yaml
+    - k8s/database-persistent-volume-claim.yaml
+    - k8s/ingress-service.yaml
+    - k8s/issues.yaml
+    - k8s/postgres-cluster-ip-service.yaml
+    - k8s/postgres-deployment.yaml
+    - k8s/redis-cluster-ip-service.yaml
+    - k8s/redis-deployment.yaml
+    - k8s/server-cluster-ip-service.yaml
+    - k8s/server-deployment.yaml
+    - k8s/worker-deployment.yaml
