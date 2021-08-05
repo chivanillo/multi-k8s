@@ -104,3 +104,56 @@ Nginx Ingress: https://github.com/kubernetes/ingress-nginx (community led projec
 # Open Kubernetes Dashboard
 
 > minikube dashboard
+
+# Tagging Docker Images:
+
+We will be using an additional tag using the GIT_SHA to tag the image.
+Getting Git SHA for a commit:
+
+> git rev-parse HEAD
+> Print out all git SHA for every single commit:
+> git log
+
+New build command:
+
+> docker build -t chivanillo/multi-client:latest -t chivanillo/multi-client:$GIT_SHA -f ./client/Dockerfile ./client
+
+The Image will have 2 tags:
+
+- Tag 1: chivanillo/multi-client:latest
+- Tag 2: chivanillo/multi-client:$GIT_SHA
+
+New Set Image command:
+
+> kubectl set image deployment/multi-client-deployment client=chivanillo/multi-client:$GIT_SHA
+
+# HELM:
+
+Helm is a program that we can use to administer third party software inside of our Kubernetes cluster. More on https://github.com/helm/helm.
+Command we issue => Helm Client => Tiller Server
+
+- Tiller Server: Pod running inside of our cluster and will attempt to make changes to the configuration of our cluster
+
+# Role Based Access Control (RBAC):
+
+- Limits who can access and modify objects in our cluster
+- Enabled on Google Cloud by default
+- Tiller wants to make changes to our cluster, so it needs to get some permissions set
+
+User Accounts: Identifies a person administering our cluster
+Service Accounts: Identifies a pod administering a cluster
+ClusterRoleBinding: Authorizes an accounter to do a certain set of actions across the entire cluster
+RoleBinding: Authorizes an account to do a certain set of actions in a single namespace
+
+# Creating a Service Account and related ClusterRoleBinding and tie it to Tiller
+
+Create a new service account called tiller in the kube-system namespace:
+
+> kubectl create serviceaccount --namespace kube-system tiller
+> Create a new clusterrolebinding with the role 'cluster-admin' and assign it to the service account 'tiller'  
+> kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+
+# Init Helm
+
+> helm init --service-account tiller --upgrade
+> --upgrade: Ensure to use the latest version of helm
