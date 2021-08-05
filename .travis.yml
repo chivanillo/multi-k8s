@@ -24,7 +24,7 @@ before_install:
 #  - gcloud config set project <project_name> # i.e. skilful-berm-214822
 #  - gcloud config set comput/zone us-central1-a
 #  - gcloud countainer clusters get-credentials multi-cluster
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --pasword-stdin
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker build -t chivanillo/multi-k8s -f ./client/Dockerfile.dev ./client
 
 script:
