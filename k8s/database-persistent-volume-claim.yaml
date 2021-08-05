@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  resources:
+    requests:
+      storage: "50m" # 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+
+# Access Modes:
+# ReadWriteOnce: Can be used by a single node at a time.
+# ReadOnlyMany: Multiple nodes, at the same time, can read information from this volume
+# ReadWriteMany: Multiple nodes, at the same time, can read/write information from this volume
+
+# > kubectl get storageclass
+# Storage Classes Options: https://kubernetes.io/docs/concepts/storage/storage-classes/

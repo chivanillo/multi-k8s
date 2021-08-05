@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      # Pod will reach out Kubernetes for a long term storage having all reqs defined by the claim name
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
+      containers:
+      - name: postgres
+        image: postgres
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            subPath: postgres
+            name: postgres-storage
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: PGPASSWORD
+                name: pgpassword
+
+# Need a PV (Persistent Volume) or PVC (Persistent Volume Claim) -> Volume in the host machine.
+# If a Container/Pod crashes/is killed, then the volume/data will still persists on the host machine
+# and the new Pod/Container will still be able to access the data.
+
+# PV vs PVC
+# PV: 
+# PVC: 
