@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1 # Number of different pods this deployment is supposed to make
+  selector: # Find the pods with the same label
+    matchLabels:
+      component: web
+  template:
+    metadata:
+      labels:
+        component: web
+    spec:
+      containers:
+      - name: client
+        image: chivanillo/multi-client
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
+
+# apiVersion: apps/v1
+# * ControllerRevision
+# * StatefulSet
+# * Deployment:
+#   - Runs a set of identical pods (one or more)
+#   - Monitors the state of each pod, updating as necessary
+#   - Good for dev
+#   - Good for production

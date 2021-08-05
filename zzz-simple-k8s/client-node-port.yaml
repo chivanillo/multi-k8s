@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-node-port
+spec:
+  type: NodePort
+  ports:
+    - port: 3050
+      targetPort: 3000
+      nodePort: 31515
+  selector:
+    component: web
+
+# Kubernetes is a system to deploy containerized apps
+# Node is a VM that run containers
+# Masters is a VM with a set of programs to manage nodes
+
+# Object to set up networking in a Kubernetes cluster
+# Subtypes (spec -> type):
+# * ClusterIP -> Exposes a set of pods to other objects in the cluster
+# * NodePort -> Exposes a container to the outside world. Not used for PROD env (only good for dev purposes!!)
+# * LoadBalancer -> Legacy way of getting network traffic into a cluster
+# * Ingress -> Exposes a set of services to the outside world
+
+# The way Pod and Service are communicated is by having a key,value of:
+#   Service => selector: 'component: web', and Pod => label: 'component: web'
+# targetPort is identical as the containerPort in the Pod. We want to send any incoming traffic to the containerPort
+# port: Other Pod that needs multi-client Pod
+# nodePort: Used in the browser in our to access the multi-client Pod (available to outside world). If not specific, a random
+# port is assigned in the range of 30000-32767
+
+# Create a config file to kubectl
+# > kubectl create -f <config_file>
+
+# Feed a config file to kubectl
+# > kubectl apply -f <config_file>
+# kubectl: CLI we use to change our Kubernetes cluster
+# apply: Change the current configuration of our cluster
+
+# Print the status of all running pods
+# > kubectl get <pods/services/deployments/pv/pvc/secrets>
+# get: Retrieve information about a running project
+# pods: Specifies the object type that we want to get information about
+
+# Describe detail information about a specific object
+# > kubectl describe pod <object name - optional>
+
+# Deleting an object. Gets 10 sec to resolve
+# > kubectl delete -f <config_file>
+
+# Imperative command to update image
+# > kubectl set image <object_type>/<object_name> <container_name> = <new image to use>
+# i.e. kubectl set image deployment/client-deployment client=chivanillo/multi-client:v1
+
+# In order to access any application that is running inside minikube
+# > minikube ip
+# > minikube ssh => Access to docker containers and images inside minikube
+
+# Configure the VM to use your Docker Server. This only configures your current Terminal window
+# > eval $(minikube docker-env)
+
+# Creating a Secret through an imperative command
+# > kubectl create secret generic <secret_name> --from-literal key=value
+# create: Imperative command to create a new object
+# generic: Type of secret. Other types: docker-registry, tls
+# secret_name: Name of secret, for later reference in a Pod config
+# --from-literal: We are going to add the secret information into this command, as opposed to from the config file.
+# key=value: Key-value pair of the secret information
+# i.e. kubectl create secret generic pgpassword --from-literal PGPASSWORD=postgres_password
+
+# NODE
+# Nginx Ingress: https://github.com/kubernetes/ingress-nginx (community led project)
+#   |
+#   | ==> ClusterIP Service: Deployment[multi-client pod, multi-client pod, multi-client pod]
+#   | ==> ClusterIP Service: Deployment[multi-server pod, multi-server pod, multi-server pod]
+#           |
+#           | ==> ClusterIP Service: Deployment[Redis pod] <== Deployment[multi-worker pod]
+#           |
+#           | ==> ClusterIP Service: Deployment[Postgres pod]  ===> Postgres PVC
